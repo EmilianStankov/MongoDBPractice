@@ -136,8 +136,7 @@ public class MongoService {
 		DBCollection actors = db.getCollection("actors");
 		String actorsNames = "";
 		for (String name : DatabaseManipulator.getNames(actors)) {
-			actorsNames += name;
-			actorsNames += "<br>";
+			actorsNames += "<a href=\"./actor/" + name + "\">" + name + "</a><br>";
 		}
 		return actorsNames;
 	}
@@ -150,8 +149,26 @@ public class MongoService {
 		DBCollection movies = db.getCollection("movies");
 		String moviesNames = "";
 		for (String name : DatabaseManipulator.getNames(movies)) {
-			moviesNames += name + "<br>";
+			moviesNames += "<a href=\"./movie/" + name + "\">" + name + "</a><br>";
 		}
 		return moviesNames;
+	}
+
+	@GET
+	@Path("/actor/{name}")
+	public String getActor(@PathParam("name") String name) throws UnknownHostException {
+		MongoClient mongoClient = new MongoClient("localhost", 27017);
+		DB db = mongoClient.getDB("movies");
+		DBCollection actors = db.getCollection("actors");
+		return DatabaseManipulator.getObject(name, actors).toString();
+	}
+
+	@GET
+	@Path("/movie/{name}")
+	public String getMovie(@PathParam("name") String name) throws UnknownHostException {
+		MongoClient mongoClient = new MongoClient("localhost", 27017);
+		DB db = mongoClient.getDB("movies");
+		DBCollection movies = db.getCollection("movies");
+		return DatabaseManipulator.getObject(name, movies).toString();
 	}
 }

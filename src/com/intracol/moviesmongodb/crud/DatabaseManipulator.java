@@ -9,6 +9,7 @@ import com.intracol.moviesmongodb.models.Actor;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 public class DatabaseManipulator {
 	private static final String LINE_BREAK = "*******************************";
@@ -110,5 +111,9 @@ public class DatabaseManipulator {
 			names.add(c.next().get("name").toString());
 		}
 		return names;
+	}
+
+	public static DBObject getObject(String name, DBCollection collection) {
+		return collection.findOne(new BasicDBObject("name", name));
 	}
 }
