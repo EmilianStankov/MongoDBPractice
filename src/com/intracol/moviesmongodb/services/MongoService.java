@@ -57,7 +57,6 @@ public class MongoService {
 		movies.createIndex(new BasicDBObject("name", 1).append("year", 1));
 		actors.createIndex(new BasicDBObject("name", 1).append("dateBirth", 1));
 
-		// Clear the test database so we can run again.
 		return "Database initialized!";
 	}
 
