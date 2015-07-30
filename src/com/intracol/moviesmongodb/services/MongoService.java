@@ -138,6 +138,7 @@ public class MongoService {
 
 	@GET
 	@Path("/actor/{name}")
+	@Produces(MediaType.TEXT_HTML)
 	public String getActor(@PathParam("name") String name) throws UnknownHostException {
 		MongoClient mongoClient = new MongoClient("localhost", 27017);
 		DB db = mongoClient.getDB("movies");
