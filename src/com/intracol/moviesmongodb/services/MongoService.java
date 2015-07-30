@@ -25,20 +25,9 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
-// Plain old Java Object it does not extend as class or implements
-// an interface
-
-// The class registers its methods for the HTTP GET request using the @GET annotation.
-// Using the @Produces annotation, it defines that it can deliver several MIME types,
-// text, XML and HTML.
-
-// The browser requests per default the HTML MIME type.
-
-//Sets the path to base URL + /hello
 @Path("/mongo")
 public class MongoService {
 
-	// This method is called if TEXT_PLAIN is request
 	@GET
 	@Path("/generate")
 	@Produces(MediaType.TEXT_PLAIN)
