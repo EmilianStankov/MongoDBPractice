@@ -14,30 +14,24 @@ import com.mongodb.DBObject;
 public class DatabaseManipulator {
 	private static final String LINE_BREAK = "*******************************";
 
-	public static void addNewActor(DBCollection movies, DBCollection actors, Actor actor, int n) {
+	public static void addNewActor(DBCollection movies, DBCollection actors, Actor actor) {
 		System.out.println(LINE_BREAK);
 		System.out.println("Adding a new Actor to the database");
-		DBCursor movie;
 		actors.save(actor);
-		movie = movies.find().limit(n);
-		while (movie.hasNext()) {
-			movie.next();
-			movies.update(movie.curr(), new BasicDBObject("$push", new BasicDBObject("actors",
-					actors.findOne(new BasicDBObject("name", actor.getName())).get("_id"))));
-		}
-		movie = movies.find();
-		System.out.println(cursorData(movie));
 		System.out.println(LINE_BREAK);
 	}
 
-	public static void addNewActorToMovie(DBCollection movies, DBCollection actors, String actorName,
+	public static boolean addNewActorToMovie(DBCollection movies, DBCollection actors, String actorName,
 			String movieName) {
 		DBCursor movie = movies.find(new BasicDBObject("name", movieName)).limit(1);
 		DBCursor actor = actors.find(new BasicDBObject("name", actorName)).limit(1);
+		boolean result = false;
 		while (movie.hasNext() && actor.hasNext()) {
+			result = true;
 			movies.update(movie.next(),
 					new BasicDBObject("$push", new BasicDBObject("actors", actor.next().get("_id"))));
 		}
+		return result;
 	}
 
 	private static String cursorData(DBCursor c) {

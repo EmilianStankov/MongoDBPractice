@@ -4,6 +4,7 @@ import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -74,16 +75,26 @@ public class MongoService {
 	@Path("/createactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String newActor(@FormParam("name") String name, @FormParam("description") String description,
-			@FormParam("date") String dateBirth, @FormParam("movies") int moviesCount)
-					throws UnknownHostException, ParseException {
+			@FormParam("date") String dateBirth) throws UnknownHostException, ParseException {
 		MongoClient mongoClient = new MongoClient("localhost", 27017);
 		DB db = mongoClient.getDB("movies");
 		DBCollection actors = db.getCollection("actors");
 		DBCollection movies = db.getCollection("movies");
 		DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
 		Date date = format.parse(dateBirth);
-		DatabaseManipulator.addNewActor(movies, actors, new Actor(name, description, date), moviesCount);
+		DatabaseManipulator.addNewActor(movies, actors, new Actor(name, description, date));
 		return "Actor created successfully";
+	}
+
+	@POST
+	@Path("/createmovie")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String newMovie(@FormParam("name") String name, @FormParam("year") int year) throws UnknownHostException {
+		MongoClient mongoClient = new MongoClient("localhost", 27017);
+		DB db = mongoClient.getDB("movies");
+		DBCollection movies = db.getCollection("movies");
+		movies.save(new Movie(name, year, new ArrayList<Actor>()));
+		return "Movie created successfully";
 	}
 
 	@POST
@@ -95,8 +106,11 @@ public class MongoService {
 		DB db = mongoClient.getDB("movies");
 		DBCollection actors = db.getCollection("actors");
 		DBCollection movies = db.getCollection("movies");
-		DatabaseManipulator.addNewActorToMovie(movies, actors, actorName, movieName);
-		return "Actor added successfully";
+		if (DatabaseManipulator.addNewActorToMovie(movies, actors, actorName, movieName)) {
+			return "Actor added successfully";
+		} else {
+			return "Movie or actor doesn't exist in database!";
+		}
 	}
 
 	@GET
