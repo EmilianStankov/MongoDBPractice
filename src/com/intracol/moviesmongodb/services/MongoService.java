@@ -86,6 +86,19 @@ public class MongoService {
 		return "Actor created successfully";
 	}
 
+	@POST
+	@Path("/addactor")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String addActor(@FormParam("actorName") String actorName, @FormParam("movieName") String movieName)
+			throws UnknownHostException, ParseException {
+		MongoClient mongoClient = new MongoClient("localhost", 27017);
+		DB db = mongoClient.getDB("movies");
+		DBCollection actors = db.getCollection("actors");
+		DBCollection movies = db.getCollection("movies");
+		DatabaseManipulator.addNewActorToMovie(movies, actors, actorName, movieName);
+		return "Actor added successfully";
+	}
+
 	@GET
 	@Path("/sort{n}actors")
 	public String sortActors(@PathParam("n") int n) throws UnknownHostException {
@@ -93,7 +106,7 @@ public class MongoService {
 		DB db = mongoClient.getDB("movies");
 		DBCollection movies = db.getCollection("movies");
 		DBCollection actors = db.getCollection("actors");
-		return DatabaseManipulator.sortActorsStarringInMovies(movies, actors, n);
+		return DatabaseManipulator.sortActorsStarringInMovies(movies, actors, n).replaceAll("\n", "<br>");
 	}
 
 	@GET

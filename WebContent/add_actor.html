@@ -2,20 +2,14 @@
 <body>
 	<h1>Create new actor</h1>
  
-	<form action="rest/mongo/createactor" method="post">
+	<form action="rest/mongo/addactor" method="post">
 		<p>
-			Name: <input type="text" name="name" />
+			Actor Name: <input type="text" name="actorName" />
 		</p>
 		<p>
-			Description: <input type="text" name="description" />
+			Movie Name: <input type="text" name="movieName" />
 		</p>
-		<p>
-			Date of birth: <input type="text" name="date" />
-		</p>
-		<p>
-			Number of movies: <input type="number" name="movies" />
-		</p>
-		<input type="submit" value="Create Actor" />
+		<input type="submit" value="Add Actor" />
 	</form>
  
 </body>

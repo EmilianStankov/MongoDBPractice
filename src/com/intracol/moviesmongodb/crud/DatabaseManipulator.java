@@ -30,6 +30,16 @@ public class DatabaseManipulator {
 		System.out.println(LINE_BREAK);
 	}
 
+	public static void addNewActorToMovie(DBCollection movies, DBCollection actors, String actorName,
+			String movieName) {
+		DBCursor movie = movies.find(new BasicDBObject("name", movieName)).limit(1);
+		DBCursor actor = actors.find(new BasicDBObject("name", actorName)).limit(1);
+		while (movie.hasNext() && actor.hasNext()) {
+			movies.update(movie.next(),
+					new BasicDBObject("$push", new BasicDBObject("actors", actor.next().get("_id"))));
+		}
+	}
+
 	private static String cursorData(DBCursor c) {
 		String data = "";
 		while (c.hasNext()) {
