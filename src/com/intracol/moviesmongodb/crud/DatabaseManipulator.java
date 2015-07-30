@@ -78,6 +78,7 @@ public class DatabaseManipulator {
 		while (actor.hasNext()) {
 			moviesStarringActor = movies.find(new BasicDBObject("actors",
 					new BasicDBObject("$elemMatch", new BasicDBObject("$eq", actor.next().get("_id")))));
+			moviesStarringActor.sort(new BasicDBObject("year", 1));
 			while (moviesStarringActor.hasNext()) {
 				result += moviesStarringActor.next().get("name").toString() + " "
 						+ moviesStarringActor.curr().get("year").toString() + "\n";
@@ -87,17 +88,17 @@ public class DatabaseManipulator {
 		return result;
 	}
 
-	public static String sortActorsStarringInMovies(int n) throws UnknownHostException {
+	public static String sortActorsStarringInMovie(String movieName, String p) throws UnknownHostException {
 		initDB();
 		System.out.println(LINE_BREAK);
 		System.out.println("Sorting actors starring in movies");
 		DBCursor movie;
 		DBCursor actorsInMovie;
 		String data = "";
-		movie = movies.find().limit(n);
+		movie = movies.find(new BasicDBObject("name", movieName)).limit(1);
 		while (movie.hasNext()) {
 			actorsInMovie = actors.find(new BasicDBObject("_id", new BasicDBObject("$in", movie.next().get("actors"))));
-			actorsInMovie.sort(new BasicDBObject("dateBirth", 1));
+			actorsInMovie.sort(new BasicDBObject(p, 1));
 			data += cursorData(actorsInMovie) + "\n";
 		}
 		System.out.println(LINE_BREAK);

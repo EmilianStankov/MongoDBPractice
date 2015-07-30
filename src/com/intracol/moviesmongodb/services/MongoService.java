@@ -22,6 +22,7 @@ import com.intracol.moviesmongodb.models.Actor;
 import com.intracol.moviesmongodb.models.Movie;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 // Plain old Java Object it does not extend as class or implements
@@ -85,9 +86,9 @@ public class MongoService {
 	}
 
 	@GET
-	@Path("/sort{n}actors")
-	public String sortActors(@PathParam("n") int n) throws UnknownHostException {
-		return DatabaseManipulator.sortActorsStarringInMovies(n).replaceAll("\n", "<br>");
+	@Path("/sortactors{n}/{p}")
+	public String sortActors(@PathParam("n") String n, @PathParam("p") String p) throws UnknownHostException {
+		return DatabaseManipulator.sortActorsStarringInMovie(n, p).replaceAll("\n", "<br>");
 	}
 
 	@GET
@@ -116,8 +117,8 @@ public class MongoService {
 	@GET
 	@Path("/starring{n}")
 	public String starring(@PathParam("n") String name) throws UnknownHostException {
-		return "Movies " + name + " stars in:<br>"
-				+ DatabaseManipulator.moviesActorStarsIn(name).replaceAll("\n", "<br>");
+		return String.format("Movies %s stars in:<br>%s", name,
+				DatabaseManipulator.moviesActorStarsIn(name).replaceAll("\n", "<br>"));
 	}
 
 	@GET
@@ -128,7 +129,7 @@ public class MongoService {
 		DBCollection actors = db.getCollection("actors");
 		String actorsNames = "";
 		for (String name : DatabaseManipulator.getNames(actors)) {
-			actorsNames += "<a href=\"./actor/" + name + "\">" + name + "</a><br>";
+			actorsNames += String.format("<a href=\"./actor/%s\">%s</a><br>", name, name);
 		}
 		return actorsNames;
 	}
@@ -141,7 +142,7 @@ public class MongoService {
 		DBCollection movies = db.getCollection("movies");
 		String moviesNames = "";
 		for (String name : DatabaseManipulator.getNames(movies)) {
-			moviesNames += "<a href=\"./movie/" + name + "\">" + name + "</a><br>";
+			moviesNames += String.format("<a href=\"./movie/%s\">%s</a><br>", name, name);
 		}
 		return moviesNames;
 	}
@@ -152,8 +153,10 @@ public class MongoService {
 		MongoClient mongoClient = new MongoClient("localhost", 27017);
 		DB db = mongoClient.getDB("movies");
 		DBCollection actors = db.getCollection("actors");
-		return DatabaseManipulator.getObject(name, actors).toString()
-				+ "<br><a href=\"../starring" + name + "\">" + name + "</a>";
+		DBObject actor = DatabaseManipulator.getObject(name, actors);
+		return String.format(
+				"<h2>%s</h2><h3>Description</h3>%s<h3>Date of birth</h3>%s<br><a href=\"../starring%s\">Movies starring %s</a>",
+				name, actor.get("description"), actor.get("dateBirth").toString(), name, name);
 	}
 
 	@GET
@@ -162,6 +165,10 @@ public class MongoService {
 		MongoClient mongoClient = new MongoClient("localhost", 27017);
 		DB db = mongoClient.getDB("movies");
 		DBCollection movies = db.getCollection("movies");
-		return DatabaseManipulator.getObject(name, movies).toString();
+		DBObject movie = DatabaseManipulator.getObject(name, movies);
+		return String.format(
+				"<h2>%s</h2><h3>Year</h3>%s<br><h3>Starring:</h3>%s",
+				name, movie.get("year"),
+				DatabaseManipulator.sortActorsStarringInMovie(name, "name").replaceAll("\n", "<br>"));
 	}
 }
