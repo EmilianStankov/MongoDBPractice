@@ -115,8 +115,9 @@ public class MongoService {
 
 	@GET
 	@Path("/starring{n}")
-	public void starring(@PathParam("n") int n) throws UnknownHostException {
-		DatabaseManipulator.moviesActorsStarIn(n);
+	public String starring(@PathParam("n") String name) throws UnknownHostException {
+		return "Movies " + name + " stars in:<br>"
+				+ DatabaseManipulator.moviesActorStarsIn(name).replaceAll("\n", "<br>");
 	}
 
 	@GET
@@ -151,7 +152,8 @@ public class MongoService {
 		MongoClient mongoClient = new MongoClient("localhost", 27017);
 		DB db = mongoClient.getDB("movies");
 		DBCollection actors = db.getCollection("actors");
-		return DatabaseManipulator.getObject(name, actors).toString();
+		return DatabaseManipulator.getObject(name, actors).toString()
+				+ "<br><a href=\"../starring" + name + "\">" + name + "</a>";
 	}
 
 	@GET

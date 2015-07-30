@@ -68,22 +68,23 @@ public class DatabaseManipulator {
 		return data;
 	}
 
-	public static void moviesActorsStarIn(int n) throws UnknownHostException {
+	public static String moviesActorStarsIn(String actorName) throws UnknownHostException {
 		initDB();
 		System.out.println(LINE_BREAK);
-		System.out.println("Movies " + n + " of the actors star in:");
+		System.out.println("Movies " + actorName + " stars in:");
 		DBCursor moviesStarringActor;
-		DBCursor actor;
-		actor = actors.find().limit(n);
+		DBCursor actor = actors.find(new BasicDBObject("name", actorName)).limit(1);
+		String result = "";
 		while (actor.hasNext()) {
 			moviesStarringActor = movies.find(new BasicDBObject("actors",
 					new BasicDBObject("$elemMatch", new BasicDBObject("$eq", actor.next().get("_id")))));
 			while (moviesStarringActor.hasNext()) {
-				System.out.println(moviesStarringActor.next().get("name").toString() + " "
-						+ moviesStarringActor.curr().get("year").toString());
+				result += moviesStarringActor.next().get("name").toString() + " "
+						+ moviesStarringActor.curr().get("year").toString() + "\n";
 			}
 		}
 		System.out.println(LINE_BREAK);
+		return result;
 	}
 
 	public static String sortActorsStarringInMovies(int n) throws UnknownHostException {
