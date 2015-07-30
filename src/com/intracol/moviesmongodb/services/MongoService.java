@@ -6,7 +6,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import javax.ws.rs.Consumes;
@@ -19,11 +18,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.intracol.moviesmongodb.crud.DatabaseManipulator;
-import com.intracol.moviesmongodb.generators.ActorInitializer;
-import com.intracol.moviesmongodb.generators.MovieInitializer;
 import com.intracol.moviesmongodb.models.Actor;
 import com.intracol.moviesmongodb.models.Movie;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
@@ -43,32 +39,18 @@ public class MongoService {
 
 	// This method is called if TEXT_PLAIN is request
 	@GET
-	@Path("/initialize")
+	@Path("/generate")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String sayPlainTextHello() throws UnknownHostException {
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("movies");
-		DBCollection movies = db.getCollection("movies");
-		DBCollection actors = db.getCollection("actors");
-		List<Actor> actorsList = ActorInitializer.initializeActors(7);
-		DatabaseManipulator.insertIntoCollection(actors, actorsList);
-		List<Movie> moviesList = MovieInitializer.initializeMovies(10, actorsList);
-		DatabaseManipulator.insertIntoCollection(movies, moviesList);
-
-		movies.createIndex(new BasicDBObject("name", 1).append("year", 1));
-		actors.createIndex(new BasicDBObject("name", 1).append("dateBirth", 1));
-
-		return "Database initialized!";
+	public String generate() throws UnknownHostException {
+		DatabaseManipulator.generate();
+		return "Data generated!";
 	}
 
 	@GET
 	@Path("/sort{n}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String sortMoviesByYear(@PathParam("n") int n) throws UnknownHostException {
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("movies");
-		DBCollection movies = db.getCollection("movies");
-		return DatabaseManipulator.sortMovies(movies, n);
+		return DatabaseManipulator.sortMovies(n);
 	}
 
 	@POST
@@ -76,13 +58,9 @@ public class MongoService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String newActor(@FormParam("name") String name, @FormParam("description") String description,
 			@FormParam("date") String dateBirth) throws UnknownHostException, ParseException {
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("movies");
-		DBCollection actors = db.getCollection("actors");
-		DBCollection movies = db.getCollection("movies");
 		DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
 		Date date = format.parse(dateBirth);
-		DatabaseManipulator.addNewActor(movies, actors, new Actor(name, description, date));
+		DatabaseManipulator.addNewActor(new Actor(name, description, date));
 		return "Actor created successfully";
 	}
 
@@ -90,10 +68,7 @@ public class MongoService {
 	@Path("/createmovie")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String newMovie(@FormParam("name") String name, @FormParam("year") int year) throws UnknownHostException {
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("movies");
-		DBCollection movies = db.getCollection("movies");
-		movies.save(new Movie(name, year, new ArrayList<Actor>()));
+		DatabaseManipulator.addNewMovie(new Movie(name, year, new ArrayList<Actor>()));
 		return "Movie created successfully";
 	}
 
@@ -102,11 +77,7 @@ public class MongoService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String addActor(@FormParam("actorName") String actorName, @FormParam("movieName") String movieName)
 			throws UnknownHostException, ParseException {
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("movies");
-		DBCollection actors = db.getCollection("actors");
-		DBCollection movies = db.getCollection("movies");
-		if (DatabaseManipulator.addNewActorToMovie(movies, actors, actorName, movieName)) {
+		if (DatabaseManipulator.addNewActorToMovie(actorName, movieName)) {
 			return "Actor added successfully";
 		} else {
 			return "Movie or actor doesn't exist in database!";
@@ -116,19 +87,13 @@ public class MongoService {
 	@GET
 	@Path("/sort{n}actors")
 	public String sortActors(@PathParam("n") int n) throws UnknownHostException {
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("movies");
-		DBCollection movies = db.getCollection("movies");
-		DBCollection actors = db.getCollection("actors");
-		return DatabaseManipulator.sortActorsStarringInMovies(movies, actors, n).replaceAll("\n", "<br>");
+		return DatabaseManipulator.sortActorsStarringInMovies(n).replaceAll("\n", "<br>");
 	}
 
 	@GET
 	@Path("/deletedb")
 	public String deleteDB() throws UnknownHostException {
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("movies");
-		db.dropDatabase();
+		DatabaseManipulator.delete();
 		return "Deleted database";
 	}
 
@@ -136,22 +101,22 @@ public class MongoService {
 	@Path("/deleteactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String deleteActor(@FormParam("name") String name) throws UnknownHostException {
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("movies");
-		DBCollection actors = db.getCollection("actors");
-		DBCollection movies = db.getCollection("movies");
-		DatabaseManipulator.removeActors(movies, actors, new String[] { name });
+		DatabaseManipulator.removeActors(new String[] { name });
 		return "Actor deleted successfully";
+	}
+
+	@POST
+	@Path("/deletemovie")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String deleteMovie(@FormParam("name") String name) throws UnknownHostException {
+		DatabaseManipulator.removeMovie(name);
+		return "Movie deleted successfully";
 	}
 
 	@GET
 	@Path("/starring{n}")
 	public void starring(@PathParam("n") int n) throws UnknownHostException {
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("movies");
-		DBCollection actors = db.getCollection("actors");
-		DBCollection movies = db.getCollection("movies");
-		DatabaseManipulator.moviesActorsStarIn(movies, actors, n);
+		DatabaseManipulator.moviesActorsStarIn(n);
 	}
 
 	@GET

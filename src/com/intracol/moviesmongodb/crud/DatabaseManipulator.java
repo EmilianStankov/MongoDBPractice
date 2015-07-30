@@ -1,28 +1,54 @@
 package com.intracol.moviesmongodb.crud;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.intracol.moviesmongodb.generators.ActorInitializer;
+import com.intracol.moviesmongodb.generators.MovieInitializer;
 import com.intracol.moviesmongodb.models.Actor;
+import com.intracol.moviesmongodb.models.Movie;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 
 public class DatabaseManipulator {
 	private static final String LINE_BREAK = "*******************************";
 
-	public static void addNewActor(DBCollection movies, DBCollection actors, Actor actor) {
+	private static DBCollection movies;
+	private static DBCollection actors;
+	private static DB db;
+
+	private static void initDB() throws UnknownHostException {
+		MongoClient mongoClient = new MongoClient("localhost", 27017);
+		db = mongoClient.getDB("movies");
+		movies = db.getCollection("movies");
+		actors = db.getCollection("actors");
+	}
+
+	public static void addNewActor(Actor actor) throws UnknownHostException {
+		initDB();
 		System.out.println(LINE_BREAK);
 		System.out.println("Adding a new Actor to the database");
 		actors.save(actor);
 		System.out.println(LINE_BREAK);
 	}
 
-	public static boolean addNewActorToMovie(DBCollection movies, DBCollection actors, String actorName,
-			String movieName) {
+	public static void addNewMovie(Movie movie) throws UnknownHostException {
+		initDB();
+		System.out.println(LINE_BREAK);
+		System.out.println("Adding a new Movie to the database");
+		movies.save(movie);
+		System.out.println(LINE_BREAK);
+	}
+
+	public static boolean addNewActorToMovie(String actorName, String movieName) throws UnknownHostException {
+		initDB();
 		DBCursor movie = movies.find(new BasicDBObject("name", movieName)).limit(1);
 		DBCursor actor = actors.find(new BasicDBObject("name", actorName)).limit(1);
 		boolean result = false;
@@ -42,7 +68,8 @@ public class DatabaseManipulator {
 		return data;
 	}
 
-	public static void moviesActorsStarIn(DBCollection movies, DBCollection actors, int n) {
+	public static void moviesActorsStarIn(int n) throws UnknownHostException {
+		initDB();
 		System.out.println(LINE_BREAK);
 		System.out.println("Movies " + n + " of the actors star in:");
 		DBCursor moviesStarringActor;
@@ -59,7 +86,8 @@ public class DatabaseManipulator {
 		System.out.println(LINE_BREAK);
 	}
 
-	public static String sortActorsStarringInMovies(DBCollection movies, DBCollection actors, int n) {
+	public static String sortActorsStarringInMovies(int n) throws UnknownHostException {
+		initDB();
 		System.out.println(LINE_BREAK);
 		System.out.println("Sorting actors starring in movies");
 		DBCursor movie;
@@ -75,7 +103,8 @@ public class DatabaseManipulator {
 		return data;
 	}
 
-	public static String sortMovies(DBCollection movies, int n) {
+	public static String sortMovies(int n) throws UnknownHostException {
+		initDB();
 		System.out.println(LINE_BREAK);
 		System.out.println("Sorting movies by year");
 		DBCursor movie = movies.find().limit(n);
@@ -84,7 +113,8 @@ public class DatabaseManipulator {
 		return cursorData(movie);
 	}
 
-	public static void removeActors(DBCollection movies, DBCollection actors, String[] actorsNames) {
+	public static void removeActors(String[] actorsNames) throws UnknownHostException {
+		initDB();
 		System.out.println(LINE_BREAK);
 		System.out.println("Removing actors");
 		DBCursor movie;
@@ -100,6 +130,13 @@ public class DatabaseManipulator {
 		movie = movies.find();
 		System.out.println(cursorData(movie));
 		System.out.println(LINE_BREAK);
+	}
+
+	public static void removeMovie(String movieName) throws UnknownHostException {
+		initDB();
+		System.out.println(LINE_BREAK);
+		System.out.println("Deleting movie");
+		movies.remove(new BasicDBObject("name", movieName));
 	}
 
 	public static void insertIntoCollection(DBCollection collection, List<? extends BasicDBObject> list) {
@@ -119,5 +156,21 @@ public class DatabaseManipulator {
 
 	public static DBObject getObject(String name, DBCollection collection) {
 		return collection.findOne(new BasicDBObject("name", name));
+	}
+
+	public static void generate() throws UnknownHostException {
+		initDB();
+		List<Actor> actorsList = ActorInitializer.initializeActors(7);
+		DatabaseManipulator.insertIntoCollection(actors, actorsList);
+		List<Movie> moviesList = MovieInitializer.initializeMovies(10, actorsList);
+		DatabaseManipulator.insertIntoCollection(movies, moviesList);
+
+		movies.createIndex(new BasicDBObject("name", 1).append("year", 1));
+		actors.createIndex(new BasicDBObject("name", 1).append("dateBirth", 1));
+	}
+
+	public static void delete() throws UnknownHostException {
+		initDB();
+		db.dropDatabase();
 	}
 }
