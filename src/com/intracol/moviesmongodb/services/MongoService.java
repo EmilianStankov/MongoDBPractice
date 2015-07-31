@@ -162,6 +162,6 @@ public class MongoService {
 		return String.format(
 				"<h2>%s</h2><h3>Year</h3>%s<br><h3>Starring:</h3>%s",
 				name, movie.get("year"),
-				DatabaseManipulator.sortActorsStarringInMovie(name, "name").replaceAll("\n", "<br>"));
+				DatabaseManipulator.sortActorsStarringInMovie(name, "dateBirth").replaceAll("\n", "<br>"));
 	}
 }
