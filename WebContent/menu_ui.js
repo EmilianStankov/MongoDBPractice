@@ -45,4 +45,6 @@ $(document).ready(function() {
 	$("input[type=submit]").mouseout(function() {
 		$(this).css({"background-color": "#321", "border": "2px solid orange", "color": "white", "margin-left": "0px", "margin-top": "0px"});
 	});
+	
+	$("h3").css({"margin-bottom": "3px"});
 });
