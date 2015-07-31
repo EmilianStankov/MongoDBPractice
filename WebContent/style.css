@@ -1,0 +1,20 @@
+body {
+	background: #542;
+	color: white;
+	font-family: Tahoma;
+	text-align: center;
+}
+
+a {
+	text-decoration: none;
+	color: orange;
+}
+
+ul li {
+	display: inline;
+	margin-right: 10px;
+}
+
+#menu {
+	height: 40px;
+}

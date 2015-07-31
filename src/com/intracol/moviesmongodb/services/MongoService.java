@@ -28,8 +28,8 @@ import com.mongodb.MongoClient;
 @Path("/mongo")
 public class MongoService {
 
-	private static final String MENU = "<html><head><script type='text/javascript' "
-			+ "src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'>"
+	private static final String MENU = "<html><head><link rel='stylesheet' type='text/css' href='../../style.css'>"
+			+ "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'>"
 			+ "</script><script type='text/javascript' src='../../menu_ui.js'></script></head>"
 			+ "<body><h1>Welcome</h1><h2 class='menuToggle'>Hide menu</h2><ul id='menu'><li>"
 			+ "<a href='../../create_actor.html'>Create actor</a></li><li><a href='../../add_actor.html'>"
@@ -91,7 +91,8 @@ public class MongoService {
 	@GET
 	@Path("/sortactors{n}/{p}")
 	public String sortActors(@PathParam("n") String n, @PathParam("p") String p) throws UnknownHostException {
-		return MENU + DatabaseManipulator.sortActorsStarringInMovie(n, p).replaceAll("\n", "<br>");
+		return MENU.replaceAll("../../", "../../../")
+				+ DatabaseManipulator.sortActorsStarringInMovie(n, p).replaceAll("\n", "<br>");
 	}
 
 	@GET
@@ -164,7 +165,7 @@ public class MongoService {
 		DB db = mongoClient.getDB("movies");
 		DBCollection actors = db.getCollection("actors");
 		DBObject actor = DatabaseManipulator.getObject(name, actors);
-		return MENU + String.format(
+		return MENU.replaceAll("../../", "../../../") + String.format(
 				"<h2>%s</h2><h3>Description</h3>%s<h3>Date of birth</h3>%s<br><a href=\"../starring%s\">Movies starring %s</a>",
 				name, actor.get("description"), actor.get("dateBirth").toString(), name, name);
 	}
@@ -177,7 +178,7 @@ public class MongoService {
 		DB db = mongoClient.getDB("movies");
 		DBCollection movies = db.getCollection("movies");
 		DBObject movie = DatabaseManipulator.getObject(name, movies);
-		return MENU + String.format(
+		return MENU.replaceAll("../../", "../../../") + String.format(
 				"<h2>%s</h2><h3>Year</h3>%s<br><h3>Starring:</h3>%s",
 				name, movie.get("year"),
 				DatabaseManipulator.sortActorsStarringInMovie(name, "dateBirth").replaceAll("\n", "<br>"));
