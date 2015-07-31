@@ -106,8 +106,11 @@ public class MongoService {
 	@Path("/deleteactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String deleteActor(@FormParam("name") String name) throws UnknownHostException {
-		DatabaseManipulator.removeActors(new String[] { name });
-		return MENU + "Actor deleted successfully";
+		if (DatabaseManipulator.removeActors(name)) {
+			return MENU + "Actor deleted successfully";
+		} else {
+			return MENU + "No such actor in database";
+		}
 	}
 
 	@POST

@@ -124,14 +124,16 @@ public class DatabaseManipulator {
 		return movieData(movie.sort(new BasicDBObject("year", -1)));
 	}
 
-	public static void removeActors(String[] actorsNames) throws UnknownHostException {
+	public static boolean removeActors(String actorName) throws UnknownHostException {
 		initDB();
 		System.out.println(LINE_BREAK);
 		System.out.println("Removing actors");
 		DBCursor movie;
-		for (String a : actorsNames) {
-			ObjectId actorId = (ObjectId) actors.findOne(new BasicDBObject("name", a)).get("_id");
-			actors.remove(new BasicDBObject("name", a));
+		boolean removed = false;
+		if (actors.find(new BasicDBObject("name", actorName)).hasNext()) {
+			removed = true;
+			ObjectId actorId = (ObjectId) actors.findOne(new BasicDBObject("name", actorName)).get("_id");
+			actors.remove(new BasicDBObject("name", actorName));
 			movie = movies.find();
 			while (movie.hasNext()) {
 				movie.next();
@@ -141,6 +143,7 @@ public class DatabaseManipulator {
 		movie = movies.find();
 		System.out.println(movieData(movie));
 		System.out.println(LINE_BREAK);
+		return removed;
 	}
 
 	public static boolean removeMovie(String movieName) throws UnknownHostException {

@@ -3,12 +3,14 @@ $(document).ready(function() {
 		$(this).css({"background-color": "orange", "list-style-type": "none"});
 		$(this).css({"width": "400px", "height": "40px"});
 		$(this).css({"border-radius": "10px", "padding": "5px 10px"});
+		$(this).css({"font-weight": "bold"});
 	});
 	
 	$("li").mouseout(function() {
 		$(this).css({"background-color": "#542", "list-style-type": "disc"});
 		$(this).css({"width": "300px", "height": "1.125em"});
 		$(this).css({"border-radius": "0px", "padding": "0px"});
+		$(this).css({"font-weight": "normal"});
 	});
 	
 	$("a").mouseout(function() {
