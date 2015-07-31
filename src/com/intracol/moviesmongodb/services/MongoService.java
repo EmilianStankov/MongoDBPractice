@@ -62,18 +62,30 @@ public class MongoService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String newActor(@FormParam("name") String name, @FormParam("description") String description,
 			@FormParam("date") String dateBirth) throws UnknownHostException, ParseException {
-		DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
-		Date date = format.parse(dateBirth);
-		DatabaseManipulator.addNewActor(new Actor(name, description, date));
-		return MENU + "Actor created successfully";
+		if (name != null && dateBirth != null) {
+			try {
+				DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
+				Date date = format.parse(dateBirth);
+				DatabaseManipulator.addNewActor(new Actor(name, description, date));
+			} catch (ParseException e) {
+				return MENU + "Failed to create actor!";
+			}
+			return MENU + "Actor created successfully";
+		} else {
+			return MENU + "Failed to create actor!";
+		}
 	}
 
 	@POST
 	@Path("/createmovie")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String newMovie(@FormParam("name") String name, @FormParam("year") int year) throws UnknownHostException {
-		DatabaseManipulator.addNewMovie(new Movie(name, year, new ArrayList<Actor>()));
-		return MENU + "Movie created successfully";
+		if (name != null && year != 0) {
+			DatabaseManipulator.addNewMovie(new Movie(name, year, new ArrayList<Actor>()));
+			return MENU + "Movie created successfully";
+		} else {
+			return MENU + "Failed to create movie!";
+		}
 	}
 
 	@POST
