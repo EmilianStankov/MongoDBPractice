@@ -28,7 +28,7 @@ import com.mongodb.MongoClient;
 @Path("/mongo")
 public class MongoService {
 
-	private static final String MENU = "<html><head><link rel='stylesheet' type='text/css' href='../../style.css'>"
+	private static final String MENU = "<html><head>"
 			+ "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'>"
 			+ "</script><script type='text/javascript' src='../../menu_ui.js'></script></head>"
 			+ "<body><h1>Welcome</h1><h2 class='menuToggle'>Hide menu</h2><ul id='menu'><li>"

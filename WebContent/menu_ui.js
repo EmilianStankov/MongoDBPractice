@@ -1,4 +1,14 @@
 $(document).ready(function() {
+	$("body").css({"background": "#542", "color": "white", "font-family": "Tahoma", "text-align": "center"});
+
+	$("a").css({"text-decoration": "none", "color": "orange"});
+
+	$("ul li").css({"display": "inline", "margin-right": "10px"});
+
+	$("#menu").css({"height": "40px"});
+
+	$("h1").css({"color": "orange"});
+
 	$("li").mouseover(function() {
 		$(this).css({"background-color": "orange", "list-style-type": "none"});
 		$(this).css({"width": "400px", "height": "40px"});
