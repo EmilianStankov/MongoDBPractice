@@ -37,7 +37,7 @@ public class MongoService {
 	}
 
 	@GET
-	@Path("/sort{n}")
+	@Path("/latest{n}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String sortMoviesByYear(@PathParam("n") int n) throws UnknownHostException {
 		return DatabaseManipulator.sortMovies(n);
@@ -99,8 +99,11 @@ public class MongoService {
 	@Path("/deletemovie")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String deleteMovie(@FormParam("name") String name) throws UnknownHostException {
-		DatabaseManipulator.removeMovie(name);
-		return "Movie deleted successfully";
+		if (DatabaseManipulator.removeMovie(name)) {
+			return "Deleted " + name;
+		} else {
+			return "No such movie in database";
+		}
 	}
 
 	@GET

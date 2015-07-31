@@ -29,6 +29,8 @@ public class DatabaseManipulator {
 		db = mongoClient.getDB("movies");
 		movies = db.getCollection("movies");
 		actors = db.getCollection("actors");
+		movies.createIndex(new BasicDBObject("name", 1).append("year", 1));
+		actors.createIndex(new BasicDBObject("name", 1).append("dateBirth", 1));
 	}
 
 	public static void addNewActor(Actor actor) throws UnknownHostException {
@@ -63,7 +65,7 @@ public class DatabaseManipulator {
 	private static String movieData(DBCursor movie) {
 		String data = "";
 		while (movie.hasNext()) {
-			data += movie.next().toString() + "\n";
+			data += String.format("%s, %d\n", movie.next().get("name"), movie.curr().get("year"));
 		}
 		return data;
 	}
@@ -118,9 +120,8 @@ public class DatabaseManipulator {
 		System.out.println(LINE_BREAK);
 		System.out.println("Sorting movies by year");
 		DBCursor movie = movies.find().limit(n);
-		movie.sort(new BasicDBObject("year", 1));
 		System.out.println(LINE_BREAK);
-		return movieData(movie);
+		return movieData(movie.sort(new BasicDBObject("year", -1)));
 	}
 
 	public static void removeActors(String[] actorsNames) throws UnknownHostException {
@@ -142,11 +143,15 @@ public class DatabaseManipulator {
 		System.out.println(LINE_BREAK);
 	}
 
-	public static void removeMovie(String movieName) throws UnknownHostException {
+	public static boolean removeMovie(String movieName) throws UnknownHostException {
 		initDB();
 		System.out.println(LINE_BREAK);
 		System.out.println("Deleting movie");
-		movies.remove(new BasicDBObject("name", movieName));
+		if (movies.find(new BasicDBObject("name", movieName)).hasNext()) {
+			movies.remove(new BasicDBObject("name", movieName));
+			return true;
+		}
+		return false;
 	}
 
 	public static void insertIntoCollection(DBCollection collection, List<? extends BasicDBObject> list) {
@@ -174,9 +179,6 @@ public class DatabaseManipulator {
 		DatabaseManipulator.insertIntoCollection(actors, actorsList);
 		List<Movie> moviesList = MovieInitializer.initializeMovies(10, actorsList);
 		DatabaseManipulator.insertIntoCollection(movies, moviesList);
-
-		movies.createIndex(new BasicDBObject("name", 1).append("year", 1));
-		actors.createIndex(new BasicDBObject("name", 1).append("dateBirth", 1));
 	}
 
 	public static void delete() throws UnknownHostException {
