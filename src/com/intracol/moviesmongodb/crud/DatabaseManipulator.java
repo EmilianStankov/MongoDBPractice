@@ -60,10 +60,18 @@ public class DatabaseManipulator {
 		return result;
 	}
 
-	private static String cursorData(DBCursor c) {
+	private static String movieData(DBCursor movie) {
 		String data = "";
-		while (c.hasNext()) {
-			data += c.next().toString() + "\n";
+		while (movie.hasNext()) {
+			data += movie.next().toString() + "\n";
+		}
+		return data;
+	}
+
+	private static String actorData(DBCursor actor) {
+		String data = "";
+		while (actor.hasNext()) {
+			data += String.format("%s, born on %s\n", actor.next().get("name"), actor.curr().get("dateBirth"));
 		}
 		return data;
 	}
@@ -99,7 +107,7 @@ public class DatabaseManipulator {
 		while (movie.hasNext()) {
 			actorsInMovie = actors.find(new BasicDBObject("_id", new BasicDBObject("$in", movie.next().get("actors"))));
 			actorsInMovie.sort(new BasicDBObject(p, 1));
-			data += cursorData(actorsInMovie) + "\n";
+			data += actorData(actorsInMovie) + "\n";
 		}
 		System.out.println(LINE_BREAK);
 		return data;
@@ -112,7 +120,7 @@ public class DatabaseManipulator {
 		DBCursor movie = movies.find().limit(n);
 		movie.sort(new BasicDBObject("year", 1));
 		System.out.println(LINE_BREAK);
-		return cursorData(movie);
+		return movieData(movie);
 	}
 
 	public static void removeActors(String[] actorsNames) throws UnknownHostException {
@@ -130,7 +138,7 @@ public class DatabaseManipulator {
 			}
 		}
 		movie = movies.find();
-		System.out.println(cursorData(movie));
+		System.out.println(movieData(movie));
 		System.out.println(LINE_BREAK);
 	}
 
