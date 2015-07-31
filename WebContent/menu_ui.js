@@ -9,7 +9,18 @@ $(document).ready(function() {
 		$(this).css({"width": "300px", "height": "1.125em"});
 	});
 	
-	$("h2").on("click", function() {
+	$(".menuToggle").on("click", function() {
 		  $("ul").toggle("slow");
+		  if($(".menuToggle").text() == 'Hide menu'){
+	           $(".menuToggle").text('Show menu');
+	      } else {
+	           $(".menuToggle").text('Hide menu');
+	      }
+	});
+	
+	$("#menu").mouseover(function() {
+		  console.log("height: " + $(this).height());
+		  console.log("width: " + $(this).width());
+		  console.log("background: " + $("li").css("background"));
 	});
 });

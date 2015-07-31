@@ -28,19 +28,33 @@ import com.mongodb.MongoClient;
 @Path("/mongo")
 public class MongoService {
 
+	private static final String MENU = "<html><head><script type='text/javascript' "
+			+ "src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'>"
+			+ "</script><script type='text/javascript' src='../../menu_ui.js'></script></head>"
+			+ "<body><h1>Welcome</h1><h2 class='menuToggle'>Hide menu</h2><ul id='menu'><li>"
+			+ "<a href='../../create_actor.html'>Create actor</a></li><li><a href='../../add_actor.html'>"
+			+ "Add actor to movie</a></li><li><a href='../../delete_actor.html'>Delete actor</a></li>"
+			+ "<li><a href='../../create_movie.html'>Create movie</a></li>"
+			+ "<li><a href='../../delete_movie.html'>Delete Movie</a>"
+			+ "</li><li><a href='../../rest/mongo/listactors'>List Actors</a></li><li>"
+			+ "<a href='../../rest/mongo/listmovies'>List Movies</a></li><li>"
+			+ "<a href='../../rest/mongo/latest100'>Latest movies</a></li><li>"
+			+ "<a href='../../rest/mongo/deletedb'>Delete all</a></li><li>"
+			+ "<a href='../../rest/mongo/generate'>Generate data</a></li></ul>";
+
 	@GET
 	@Path("/generate")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_HTML)
 	public String generate() throws UnknownHostException {
 		DatabaseManipulator.generate();
-		return "Data generated!";
+		return MENU + "Data generated!";
 	}
 
 	@GET
 	@Path("/latest{n}")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_HTML)
 	public String sortMoviesByYear(@PathParam("n") int n) throws UnknownHostException {
-		return DatabaseManipulator.sortMovies(n);
+		return MENU + DatabaseManipulator.sortMovies(n).replaceAll("\n", "<br>");
 	}
 
 	@POST
@@ -51,7 +65,7 @@ public class MongoService {
 		DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
 		Date date = format.parse(dateBirth);
 		DatabaseManipulator.addNewActor(new Actor(name, description, date));
-		return "Actor created successfully";
+		return MENU + "Actor created successfully";
 	}
 
 	@POST
@@ -59,7 +73,7 @@ public class MongoService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String newMovie(@FormParam("name") String name, @FormParam("year") int year) throws UnknownHostException {
 		DatabaseManipulator.addNewMovie(new Movie(name, year, new ArrayList<Actor>()));
-		return "Movie created successfully";
+		return MENU + "Movie created successfully";
 	}
 
 	@POST
@@ -68,23 +82,23 @@ public class MongoService {
 	public String addActor(@FormParam("actorName") String actorName, @FormParam("movieName") String movieName)
 			throws UnknownHostException, ParseException {
 		if (DatabaseManipulator.addNewActorToMovie(actorName, movieName)) {
-			return "Actor added successfully";
+			return MENU + "Actor added successfully";
 		} else {
-			return "Movie or actor doesn't exist in database!";
+			return MENU + "Movie or actor doesn't exist in database!";
 		}
 	}
 
 	@GET
 	@Path("/sortactors{n}/{p}")
 	public String sortActors(@PathParam("n") String n, @PathParam("p") String p) throws UnknownHostException {
-		return DatabaseManipulator.sortActorsStarringInMovie(n, p).replaceAll("\n", "<br>");
+		return MENU + DatabaseManipulator.sortActorsStarringInMovie(n, p).replaceAll("\n", "<br>");
 	}
 
 	@GET
 	@Path("/deletedb")
 	public String deleteDB() throws UnknownHostException {
 		DatabaseManipulator.delete();
-		return "Deleted database";
+		return MENU + "Deleted database";
 	}
 
 	@POST
@@ -92,7 +106,7 @@ public class MongoService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String deleteActor(@FormParam("name") String name) throws UnknownHostException {
 		DatabaseManipulator.removeActors(new String[] { name });
-		return "Actor deleted successfully";
+		return MENU + "Actor deleted successfully";
 	}
 
 	@POST
@@ -100,21 +114,23 @@ public class MongoService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String deleteMovie(@FormParam("name") String name) throws UnknownHostException {
 		if (DatabaseManipulator.removeMovie(name)) {
-			return "Deleted " + name;
+			return MENU + "Deleted " + name;
 		} else {
-			return "No such movie in database";
+			return MENU + "No such movie in database";
 		}
 	}
 
 	@GET
 	@Path("/starring{n}")
+	@Produces(MediaType.TEXT_HTML)
 	public String starring(@PathParam("n") String name) throws UnknownHostException {
-		return String.format("Movies %s stars in:<br>%s", name,
+		return MENU + String.format("Movies %s stars in:<br>%s", name,
 				DatabaseManipulator.moviesActorStarsIn(name).replaceAll("\n", "<br>"));
 	}
 
 	@GET
 	@Path("/listactors")
+	@Produces(MediaType.TEXT_HTML)
 	public String listActors() throws UnknownHostException {
 		MongoClient mongoClient = new MongoClient("localhost", 27017);
 		DB db = mongoClient.getDB("movies");
@@ -123,11 +139,12 @@ public class MongoService {
 		for (String name : DatabaseManipulator.getNames(actors)) {
 			actorsNames += String.format("<a href=\"./actor/%s\">%s</a><br>", name, name);
 		}
-		return actorsNames;
+		return MENU + actorsNames;
 	}
 
 	@GET
 	@Path("/listmovies")
+	@Produces(MediaType.TEXT_HTML)
 	public String listMovies() throws UnknownHostException {
 		MongoClient mongoClient = new MongoClient("localhost", 27017);
 		DB db = mongoClient.getDB("movies");
@@ -136,7 +153,7 @@ public class MongoService {
 		for (String name : DatabaseManipulator.getNames(movies)) {
 			moviesNames += String.format("<a href=\"./movie/%s\">%s</a><br>", name, name);
 		}
-		return moviesNames;
+		return MENU + moviesNames;
 	}
 
 	@GET
@@ -147,19 +164,20 @@ public class MongoService {
 		DB db = mongoClient.getDB("movies");
 		DBCollection actors = db.getCollection("actors");
 		DBObject actor = DatabaseManipulator.getObject(name, actors);
-		return String.format(
+		return MENU + String.format(
 				"<h2>%s</h2><h3>Description</h3>%s<h3>Date of birth</h3>%s<br><a href=\"../starring%s\">Movies starring %s</a>",
 				name, actor.get("description"), actor.get("dateBirth").toString(), name, name);
 	}
 
 	@GET
 	@Path("/movie/{name}")
+	@Produces(MediaType.TEXT_HTML)
 	public String getMovie(@PathParam("name") String name) throws UnknownHostException {
 		MongoClient mongoClient = new MongoClient("localhost", 27017);
 		DB db = mongoClient.getDB("movies");
 		DBCollection movies = db.getCollection("movies");
 		DBObject movie = DatabaseManipulator.getObject(name, movies);
-		return String.format(
+		return MENU + String.format(
 				"<h2>%s</h2><h3>Year</h3>%s<br><h3>Starring:</h3>%s",
 				name, movie.get("year"),
 				DatabaseManipulator.sortActorsStarringInMovie(name, "dateBirth").replaceAll("\n", "<br>"));
