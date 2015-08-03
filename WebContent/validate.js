@@ -35,7 +35,7 @@ $("input[type=submit]").click(function(){
 		$("#message").text("success");
 	} else {
 		$(".err").css({"margin-left": "10px", "color": "#f00", "font-weight": "bold", "font-size": "0.7em", "font-style": "italic"});
-		$("input").css({"color": "white", "background-color": "#754", "border": "2px solid orange"});
+		$("input").css({"color": "white", "background-color": "#754", "border": "2px solid orange", "font-size": "10pt"});
 		$("#message").text("invalid input");
 	}
 });

@@ -10,14 +10,14 @@ $(document).ready(function() {
 	$("h1").css({"color": "orange"});
 
 	$("li").mouseover(function() {
-		$(this).css({"background-color": "orange", "list-style-type": "none"});
+		$(this).css({"background-color": "orange", "list-style-type": "none", "border-left": "3px solid #a23", "border-top": "3px solid #a23"});
 		$(this).css({"width": "400px", "height": "40px"});
 		$(this).css({"border-radius": "10px", "padding": "5px 10px"});
 		$(this).css({"font-weight": "bold"});
 	});
 	
 	$("li").mouseout(function() {
-		$(this).css({"background-color": "#542", "list-style-type": "disc"});
+		$(this).css({"background-color": "#542", "list-style-type": "disc", "border": "none"});
 		$(this).css({"width": "300px", "height": "1.125em"});
 		$(this).css({"border-radius": "0px", "padding": "0px"});
 		$(this).css({"font-weight": "normal"});
@@ -47,7 +47,13 @@ $(document).ready(function() {
 	});
 	
 	$("input").css({"color": "white", "background-color": "#754", "border": "2px solid orange"});
-	$("input[type=number]").css({"color": "white", "background-color": "#754", "border": "2px solid orange"});
+	$("input").mouseover(function(){
+		$(this).css({"color": "white", "background-color": "#754", "border": "2px solid white"});
+	});
+	$("input").mouseout(function(){
+		$(this).css({"color": "white", "background-color": "#754", "border": "2px solid orange"});
+	});
+
 	$("input[type=submit]").css({"background-color": "#321", "border": "2px solid orange", "color": "white"});
 	$("input[type=submit]").mouseover(function() {
 		$(this).css({"background-color": "#542", "border": "3px solid orange", "color": "white", "margin-left": "-1px", "margin-top": "-1px"});
@@ -57,5 +63,7 @@ $(document).ready(function() {
 	});
 	
 	$("h3").css({"margin-bottom": "3px"});
+	
+	$("h2").css({"font-size": "16pt"})
 	
 });
