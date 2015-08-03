@@ -157,7 +157,7 @@ public class DatabaseManipulator {
 		return false;
 	}
 
-	public static void insertIntoCollection(DBCollection collection, List<? extends BasicDBObject> list) {
+	private static void insertIntoCollection(DBCollection collection, List<? extends BasicDBObject> list) {
 		for (BasicDBObject a : list) {
 			collection.save(a);
 		}
