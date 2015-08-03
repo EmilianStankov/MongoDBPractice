@@ -104,14 +104,18 @@ public class MongoService {
 	@Path("/deleteactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void deleteActor(@FormParam("name") String name) throws UnknownHostException {
-		DatabaseManipulator.removeActors(name);
+		if (name != null) {
+			DatabaseManipulator.removeActors(name);
+		}
 	}
 
 	@POST
 	@Path("/deletemovie")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void deleteMovie(@FormParam("movieName") String name) throws UnknownHostException {
-		DatabaseManipulator.removeMovie(name);
+		if (name != null) {
+			DatabaseManipulator.removeMovie(name);
+		}
 	}
 
 	@GET
