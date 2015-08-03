@@ -1,7 +1,7 @@
 <html>
 <head>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.1/jquery.form-validator.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 	<script type="text/javascript" src="menu_ui.js"></script>
 </head>
 <body>
@@ -23,15 +23,15 @@
  
 	<form action="rest/mongo/addactor" method="post">
 		<p>
-			Actor Name: <input data-validation="length" data-validation-length="min3" name="actorName" placeholder="At least 3 characters" />
+			Actor Name: <input type="text" name="actorName" placeholder="At least 3 characters" />
 		</p>
 		<p>
-			Movie Name: <input data-validation="length" data-validation-length="min1" name="movieName" placeholder="At least 1 character" />
+			Movie Name: <input type="text" name="movieName" placeholder="At least 1 character" />
 		</p>
 		<input type="submit" value="Add Actor" />
 	</form>
-
- 	<script> $.validate(); </script>
+ 	<p id="message">Invalid input</p>
+ 	<script type="text/javascript" src="validate.js"></script>
 
 </body>
 </html>

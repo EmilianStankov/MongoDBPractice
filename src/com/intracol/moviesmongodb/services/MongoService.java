@@ -57,44 +57,33 @@ public class MongoService {
 	@POST
 	@Path("/createactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String newActor(@FormParam("name") String name, @FormParam("description") String description,
+	public void newActor(@FormParam("name") String name, @FormParam("description") String description,
 			@FormParam("date") String dateBirth) throws UnknownHostException, ParseException {
-		if (name != null && dateBirth != null) {
+		if (name.length() >= 3 && dateBirth != null) {
 			try {
 				DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
 				Date date = format.parse(dateBirth);
 				DatabaseManipulator.addNewActor(new Actor(name, description, date));
 			} catch (ParseException e) {
-				return MENU + "Failed to create actor!";
 			}
-			return MENU + "Actor created successfully";
-		} else {
-			return MENU + "Failed to create actor!";
 		}
 	}
 
 	@POST
 	@Path("/createmovie")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String newMovie(@FormParam("name") String name, @FormParam("year") int year) throws UnknownHostException {
+	public void newMovie(@FormParam("name") String name, @FormParam("year") int year) throws UnknownHostException {
 		if (name != null && year > 0) {
 			DatabaseManipulator.addNewMovie(new Movie(name, year, new ArrayList<Actor>()));
-			return MENU + "Movie created successfully";
-		} else {
-			return MENU + "Failed to create movie!";
 		}
 	}
 
 	@POST
 	@Path("/addactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String addActor(@FormParam("actorName") String actorName, @FormParam("movieName") String movieName)
+	public void addActor(@FormParam("actorName") String actorName, @FormParam("movieName") String movieName)
 			throws UnknownHostException, ParseException {
-		if (DatabaseManipulator.addNewActorToMovie(actorName, movieName)) {
-			return MENU + "Actor added successfully";
-		} else {
-			return MENU + "Movie or actor doesn't exist in database!";
-		}
+		DatabaseManipulator.addNewActorToMovie(actorName, movieName);
 	}
 
 	@GET
@@ -114,23 +103,15 @@ public class MongoService {
 	@POST
 	@Path("/deleteactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String deleteActor(@FormParam("name") String name) throws UnknownHostException {
-		if (DatabaseManipulator.removeActors(name)) {
-			return MENU + "Actor deleted successfully";
-		} else {
-			return MENU + "No such actor in database";
-		}
+	public void deleteActor(@FormParam("name") String name) throws UnknownHostException {
+		DatabaseManipulator.removeActors(name);
 	}
 
 	@POST
 	@Path("/deletemovie")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String deleteMovie(@FormParam("name") String name) throws UnknownHostException {
-		if (DatabaseManipulator.removeMovie(name)) {
-			return MENU + "Deleted " + name;
-		} else {
-			return MENU + "No such movie in database";
-		}
+	public void deleteMovie(@FormParam("movieName") String name) throws UnknownHostException {
+		DatabaseManipulator.removeMovie(name);
 	}
 
 	@GET

@@ -1,7 +1,7 @@
 <html>
 <head>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.1/jquery.form-validator.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 	<script type="text/javascript" src="menu_ui.js"></script>
 </head>
 <body>
@@ -30,7 +30,8 @@
 		</p>
 		<input type="submit" value="Create Movie" />
 	</form>
-	<script> $.validate(); </script>
+	<p id="message">Invalid input</p>
+ 	<script type="text/javascript" src="validate.js"></script>
  
 </body>
 </html>

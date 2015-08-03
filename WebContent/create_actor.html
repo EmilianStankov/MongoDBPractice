@@ -1,7 +1,7 @@
 <html>
 <head>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.1/jquery.form-validator.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 	<script type="text/javascript" src="menu_ui.js"></script>
 </head>
 <body>
@@ -23,17 +23,17 @@
  
 	<form action="rest/mongo/createactor" method="post">
 		<p>
-			Name: <input data-validation="length" data-validation-length="min3" name="name" placeholder="At least 3 characters" />
+			Name: <input type="text" name="name" placeholder="At least 3 characters" />
 		</p>
 		<p>
-			Description: <input data-validation="length" data-validation-length="min10" name="description" placeholder="At least 10 characters" />
+			Description: <input type="text" name="description" placeholder="At least 10 characters" />
 		</p>
 		<p>
-			Date of birth: <input data-validation="date" data-validation-format="dd.MM.yyyy" name="date" placeholder="dd.MM.yyyy" />
+			Date of birth: <input type="text" name="date" placeholder="dd.MM.yyyy" />
 		</p>
-		<input type="submit" value="Create Actor" />
+		<input type="submit" value="Create Actor"/>
 	</form>
- 	
- 	<script> $.validate(); </script>
+ 	<p id="message">Invalid input</p>
+ 	<script type="text/javascript" src="validate.js"></script>
 </body>
 </html>
