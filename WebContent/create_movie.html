@@ -1,6 +1,7 @@
 <html>
 <head>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.1/jquery.form-validator.min.js"></script>
 	<script type="text/javascript" src="menu_ui.js"></script>
 </head>
 <body>
@@ -22,13 +23,14 @@
  
 	<form action="rest/mongo/createmovie" method="post">
 		<p>
-			Name: <input type="text" name="name" />
+			Name: <input data-validation="length" data-validation-length="min1" name="name" placeholder="At least 1 character" />
 		</p>
 		<p>
-			Year: <input type="number" name="year" />
+			Year: <input type="number" name="year" placeholder="yyyy" />
 		</p>
 		<input type="submit" value="Create Movie" />
 	</form>
+	<script> $.validate(); </script>
  
 </body>
 </html>

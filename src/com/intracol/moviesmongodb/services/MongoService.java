@@ -77,7 +77,7 @@ public class MongoService {
 	@Path("/createmovie")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String newMovie(@FormParam("name") String name, @FormParam("year") int year) throws UnknownHostException {
-		if (name != null && year != 0) {
+		if (name != null && year > 0) {
 			DatabaseManipulator.addNewMovie(new Movie(name, year, new ArrayList<Actor>()));
 			return MENU + "Movie created successfully";
 		} else {

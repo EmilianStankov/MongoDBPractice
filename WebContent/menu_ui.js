@@ -46,7 +46,7 @@ $(document).ready(function() {
 		  console.log("background: " + $("li").css("background"));
 	});
 	
-	$("input[type=text]").css({"color": "white", "background-color": "#754", "border": "2px solid orange"});
+	$("input").css({"color": "white", "background-color": "#754", "border": "2px solid orange"});
 	$("input[type=number]").css({"color": "white", "background-color": "#754", "border": "2px solid orange"});
 	$("input[type=submit]").css({"background-color": "#321", "border": "2px solid orange", "color": "white"});
 	$("input[type=submit]").mouseover(function() {
