@@ -37,6 +37,9 @@ public class RestService {
 	@Path("/latest{n}")
 	@Produces(MediaType.TEXT_HTML)
 	public String sortMoviesByYear(@PathParam("n") int n) throws UnknownHostException {
+		if (n < 1 || n > 1000) {
+			return PageBuilder.buildBadRequest();
+		}
 		return PageBuilder.buildSortMoviesByYearPage(n);
 	}
 
@@ -44,7 +47,10 @@ public class RestService {
 	@Path("/starring{n}")
 	@Produces(MediaType.TEXT_HTML)
 	public String starring(@PathParam("n") String name) throws UnknownHostException {
-		return PageBuilder.buildStarringPage(name);
+		if (name != null && name.length() < 64) {
+			return PageBuilder.buildStarringPage(name);
+		}
+		return PageBuilder.buildBadRequest();
 	}
 
 	@GET
@@ -65,20 +71,29 @@ public class RestService {
 	@Path("/actor/{name}")
 	@Produces(MediaType.TEXT_HTML)
 	public String getActor(@PathParam("name") String name) {
-		return PageBuilder.buildActorPage(name);
+		if (name != null && name.length() < 64) {
+			return PageBuilder.buildActorPage(name);
+		}
+		return PageBuilder.buildBadRequest();
 	}
 
 	@GET
 	@Path("/movie/{name}")
 	@Produces(MediaType.TEXT_HTML)
 	public String getMovie(@PathParam("name") String name) throws UnknownHostException {
-		return PageBuilder.buildMoviePage(name);
+		if (name != null && name.length() < 64) {
+			return PageBuilder.buildMoviePage(name);
+		}
+		return PageBuilder.buildBadRequest();
 	}
 
 	@GET
 	@Path("/sortactors{n}/{p}")
-	public String sortActors(@PathParam("n") String n, @PathParam("p") String p) throws UnknownHostException {
-		return PageBuilder.buildSortActorsPage(n, p);
+	public String sortActors(@PathParam("n") String name, @PathParam("p") String p) throws UnknownHostException {
+		if (name != null && name.length() < 64 && (p.equals("dateBirth") || p.equals("name"))) {
+			return PageBuilder.buildSortActorsPage(name, p);
+		}
+		return PageBuilder.buildBadRequest();
 	}
 
 	@GET
@@ -93,7 +108,8 @@ public class RestService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void newActor(@FormParam("name") String name, @FormParam("description") String description,
 			@FormParam("date") String dateBirth) throws UnknownHostException {
-		if (name.length() >= 3 && dateBirth != null) {
+		if (name.length() >= 3 && name.length() < 64 && dateBirth != null
+				&& description.length() < 1000 && description.length() > 10) {
 			try {
 				DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
 				Date date = format.parse(dateBirth);
@@ -107,7 +123,7 @@ public class RestService {
 	@Path("/createmovie")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void newMovie(@FormParam("name") String name, @FormParam("year") int year) throws UnknownHostException {
-		if (name != null && year > 0) {
+		if (name != null && name.length() < 64 && year > 0) {
 			DatabaseManipulator.addNewMovie(new Movie(name, year, new ArrayList<Actor>()));
 		}
 	}
@@ -117,14 +133,16 @@ public class RestService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void addActor(@FormParam("actorName") String actorName, @FormParam("movieName") String movieName)
 			throws UnknownHostException {
-		DatabaseManipulator.addNewActorToMovie(actorName, movieName);
+		if (actorName != null && actorName.length() < 64 && movieName != null && movieName.length() < 64) {
+			DatabaseManipulator.addNewActorToMovie(actorName, movieName);
+		}
 	}
 
 	@POST
 	@Path("/deleteactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void deleteActor(@FormParam("name") String name) throws UnknownHostException {
-		if (name != null) {
+		if (name != null && name.length() < 64) {
 			DatabaseManipulator.removeActors(name);
 		}
 	}
@@ -133,7 +151,7 @@ public class RestService {
 	@Path("/deletemovie")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void deleteMovie(@FormParam("movieName") String name) throws UnknownHostException {
-		if (name != null) {
+		if (name != null && name.length() < 64) {
 			DatabaseManipulator.removeMovie(name);
 		}
 	}

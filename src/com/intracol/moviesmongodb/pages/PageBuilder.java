@@ -27,9 +27,9 @@ public class PageBuilder {
 		return MENU + DatabaseManipulator.sortMovies(n).replaceAll("\n", "<br>");
 	}
 
-	public static String buildSortActorsPage(String n, String p) throws UnknownHostException {
+	public static String buildSortActorsPage(String name, String p) throws UnknownHostException {
 		return MENU.replaceAll("../../", "../../../")
-				+ DatabaseManipulator.sortActorsStarringInMovie(n, p).replaceAll("\n", "<br>");
+				+ DatabaseManipulator.sortActorsStarringInMovie(name, p).replaceAll("\n", "<br>");
 	}
 
 	public static String buildDeleteDBPage() {
@@ -70,5 +70,9 @@ public class PageBuilder {
 				"<h2>%s</h2><h3>Year</h3>%s<br><h3>Starring:</h3>%s",
 				name, DatabaseManipulator.getMovieYear(name),
 				DatabaseManipulator.sortActorsStarringInMovie(name, "dateBirth").replaceAll("\n", "<br>"));
+	}
+
+	public static String buildBadRequest() {
+		return MENU + "Bad Request!";
 	}
 }
