@@ -21,8 +21,8 @@ import com.intracol.moviesmongodb.crud.DatabaseManipulator;
 import com.intracol.moviesmongodb.models.Actor;
 import com.intracol.moviesmongodb.models.Movie;
 
-@Path("/mongo")
-public class MongoService {
+@Path("/db")
+public class RestService {
 
 	private static final String MENU = "<html><head>"
 			+ "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'>"
@@ -32,11 +32,11 @@ public class MongoService {
 			+ "Add actor to movie</a></li><li><a href='../../delete_actor.html'>Delete actor</a></li>"
 			+ "<li><a href='../../create_movie.html'>Create movie</a></li>"
 			+ "<li><a href='../../delete_movie.html'>Delete Movie</a>"
-			+ "</li><li><a href='../../rest/mongo/listactors'>List Actors</a></li><li>"
-			+ "<a href='../../rest/mongo/listmovies'>List Movies</a></li><li>"
-			+ "<a href='../../rest/mongo/latest100'>Latest movies</a></li><li>"
-			+ "<a href='../../rest/mongo/deletedb'>Delete all</a></li><li>"
-			+ "<a href='../../rest/mongo/generate'>Generate data</a></li></ul></body></html>";
+			+ "</li><li><a href='../../rest/db/listactors'>List Actors</a></li><li>"
+			+ "<a href='../../rest/db/listmovies'>List Movies</a></li><li>"
+			+ "<a href='../../rest/db/latest100'>Latest movies</a></li><li>"
+			+ "<a href='../../rest/db/deletedb'>Delete all</a></li><li>"
+			+ "<a href='../../rest/db/generate'>Generate data</a></li></ul></body></html>";
 
 	@GET
 	@Path("/generate")
