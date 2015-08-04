@@ -188,8 +188,20 @@ public class DatabaseManipulator {
 		return getObject(name, actors);
 	}
 
+	public static String getActorDescription(String name) {
+		return getActor(name).get("description").toString();
+	}
+
+	public static String getActorDateOfBirth(String name) {
+		return getActor(name).get("dateBirth").toString();
+	}
+
 	public static DBObject getMovie(String name) {
 		return getObject(name, movies);
+	}
+
+	public static String getMovieYear(String name) {
+		return getMovie(name).get("year").toString();
 	}
 
 	public static void generate() throws UnknownHostException {

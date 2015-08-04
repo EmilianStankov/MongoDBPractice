@@ -20,7 +20,6 @@ import javax.ws.rs.core.MediaType;
 import com.intracol.moviesmongodb.crud.DatabaseManipulator;
 import com.intracol.moviesmongodb.models.Actor;
 import com.intracol.moviesmongodb.models.Movie;
-import com.mongodb.DBObject;
 
 @Path("/mongo")
 public class MongoService {
@@ -152,21 +151,20 @@ public class MongoService {
 	@Path("/actor/{name}")
 	@Produces(MediaType.TEXT_HTML)
 	public String getActor(@PathParam("name") String name) throws UnknownHostException {
-		DBObject actor = DatabaseManipulator.getActor(name);
 		return MENU.replaceAll("../../", "../../../") + String.format(
 				"<h2>%s</h2><h3>Description</h3>%s<h3>Date of birth</h3>%s<br>"
 						+ "<a href=\"../starring%s\">Movies starring %s</a>",
-				name, actor.get("description"), actor.get("dateBirth").toString(), name, name);
+				name, DatabaseManipulator.getActorDescription(name), DatabaseManipulator.getActorDateOfBirth(name),
+				name, name);
 	}
 
 	@GET
 	@Path("/movie/{name}")
 	@Produces(MediaType.TEXT_HTML)
 	public String getMovie(@PathParam("name") String name) throws UnknownHostException {
-		DBObject movie = DatabaseManipulator.getMovie(name);
 		return MENU.replaceAll("../../", "../../../") + String.format(
 				"<h2>%s</h2><h3>Year</h3>%s<br><h3>Starring:</h3>%s",
-				name, movie.get("year"),
+				name, DatabaseManipulator.getMovieYear(name),
 				DatabaseManipulator.sortActorsStarringInMovie(name, "dateBirth").replaceAll("\n", "<br>"));
 	}
 }
