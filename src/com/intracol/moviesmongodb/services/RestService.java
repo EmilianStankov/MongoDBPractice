@@ -20,44 +20,79 @@ import javax.ws.rs.core.MediaType;
 import com.intracol.moviesmongodb.crud.DatabaseManipulator;
 import com.intracol.moviesmongodb.models.Actor;
 import com.intracol.moviesmongodb.models.Movie;
+import com.intracol.moviesmongodb.pages.PageBuilder;
 
 @Path("/db")
 public class RestService {
-
-	private static final String MENU = "<html><head>"
-			+ "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'>"
-			+ "</script><script type='text/javascript' src='../../menu_ui.js'></script></head>"
-			+ "<body><h1>Welcome</h1><h2 class='menuToggle'>Hide menu</h2><ul id='menu'><li>"
-			+ "<a href='../../create_actor.html'>Create actor</a></li><li><a href='../../add_actor.html'>"
-			+ "Add actor to movie</a></li><li><a href='../../delete_actor.html'>Delete actor</a></li>"
-			+ "<li><a href='../../create_movie.html'>Create movie</a></li>"
-			+ "<li><a href='../../delete_movie.html'>Delete Movie</a>"
-			+ "</li><li><a href='../../rest/db/listactors'>List Actors</a></li><li>"
-			+ "<a href='../../rest/db/listmovies'>List Movies</a></li><li>"
-			+ "<a href='../../rest/db/latest100'>Latest movies</a></li><li>"
-			+ "<a href='../../rest/db/deletedb'>Delete all</a></li><li>"
-			+ "<a href='../../rest/db/generate'>Generate data</a></li></ul></body></html>";
 
 	@GET
 	@Path("/generate")
 	@Produces(MediaType.TEXT_HTML)
 	public String generate() throws UnknownHostException {
 		DatabaseManipulator.generate();
-		return MENU + "Data generated!";
+		return PageBuilder.buildGenerateDBPage();
 	}
 
 	@GET
 	@Path("/latest{n}")
 	@Produces(MediaType.TEXT_HTML)
 	public String sortMoviesByYear(@PathParam("n") int n) throws UnknownHostException {
-		return MENU + DatabaseManipulator.sortMovies(n).replaceAll("\n", "<br>");
+		return PageBuilder.buildSortMoviesByYearPage(n);
+	}
+
+	@GET
+	@Path("/starring{n}")
+	@Produces(MediaType.TEXT_HTML)
+	public String starring(@PathParam("n") String name) throws UnknownHostException {
+		return PageBuilder.buildStarringPage(name);
+	}
+
+	@GET
+	@Path("/listactors")
+	@Produces(MediaType.TEXT_HTML)
+	public String listActors() {
+		return PageBuilder.buildListActorsPage();
+	}
+
+	@GET
+	@Path("/listmovies")
+	@Produces(MediaType.TEXT_HTML)
+	public String listMovies() {
+		return PageBuilder.buildListMoviesPage();
+	}
+
+	@GET
+	@Path("/actor/{name}")
+	@Produces(MediaType.TEXT_HTML)
+	public String getActor(@PathParam("name") String name) {
+		return PageBuilder.buildActorPage(name);
+	}
+
+	@GET
+	@Path("/movie/{name}")
+	@Produces(MediaType.TEXT_HTML)
+	public String getMovie(@PathParam("name") String name) throws UnknownHostException {
+		return PageBuilder.buildMoviePage(name);
+	}
+
+	@GET
+	@Path("/sortactors{n}/{p}")
+	public String sortActors(@PathParam("n") String n, @PathParam("p") String p) throws UnknownHostException {
+		return PageBuilder.buildSortActorsPage(n, p);
+	}
+
+	@GET
+	@Path("/deletedb")
+	public String deleteDB() throws UnknownHostException {
+		DatabaseManipulator.delete();
+		return PageBuilder.buildDeleteDBPage();
 	}
 
 	@POST
 	@Path("/createactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void newActor(@FormParam("name") String name, @FormParam("description") String description,
-			@FormParam("date") String dateBirth) throws UnknownHostException, ParseException {
+			@FormParam("date") String dateBirth) throws UnknownHostException {
 		if (name.length() >= 3 && dateBirth != null) {
 			try {
 				DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
@@ -81,22 +116,8 @@ public class RestService {
 	@Path("/addactor")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void addActor(@FormParam("actorName") String actorName, @FormParam("movieName") String movieName)
-			throws UnknownHostException, ParseException {
+			throws UnknownHostException {
 		DatabaseManipulator.addNewActorToMovie(actorName, movieName);
-	}
-
-	@GET
-	@Path("/sortactors{n}/{p}")
-	public String sortActors(@PathParam("n") String n, @PathParam("p") String p) throws UnknownHostException {
-		return MENU.replaceAll("../../", "../../../")
-				+ DatabaseManipulator.sortActorsStarringInMovie(n, p).replaceAll("\n", "<br>");
-	}
-
-	@GET
-	@Path("/deletedb")
-	public String deleteDB() throws UnknownHostException {
-		DatabaseManipulator.delete();
-		return MENU + "Deleted database";
 	}
 
 	@POST
@@ -115,56 +136,5 @@ public class RestService {
 		if (name != null) {
 			DatabaseManipulator.removeMovie(name);
 		}
-	}
-
-	@GET
-	@Path("/starring{n}")
-	@Produces(MediaType.TEXT_HTML)
-	public String starring(@PathParam("n") String name) throws UnknownHostException {
-		return MENU + String.format("Movies %s stars in:<br>%s", name,
-				DatabaseManipulator.moviesActorStarsIn(name).replaceAll("\n", "<br>"));
-	}
-
-	@GET
-	@Path("/listactors")
-	@Produces(MediaType.TEXT_HTML)
-	public String listActors() throws UnknownHostException {
-		String actorsNames = "";
-		for (String name : DatabaseManipulator.getActorNames()) {
-			actorsNames += String.format("<a href=\"./actor/%s\">%s</a><br>", name, name);
-		}
-		return MENU + actorsNames;
-	}
-
-	@GET
-	@Path("/listmovies")
-	@Produces(MediaType.TEXT_HTML)
-	public String listMovies() throws UnknownHostException {
-		String moviesNames = "";
-		for (String name : DatabaseManipulator.getMovieNames()) {
-			moviesNames += String.format("<a href=\"./movie/%s\">%s</a><br>", name, name);
-		}
-		return MENU + moviesNames;
-	}
-
-	@GET
-	@Path("/actor/{name}")
-	@Produces(MediaType.TEXT_HTML)
-	public String getActor(@PathParam("name") String name) throws UnknownHostException {
-		return MENU.replaceAll("../../", "../../../") + String.format(
-				"<h2>%s</h2><h3>Description</h3>%s<h3>Date of birth</h3>%s<br>"
-						+ "<a href=\"../starring%s\">Movies starring %s</a>",
-				name, DatabaseManipulator.getActorDescription(name), DatabaseManipulator.getActorDateOfBirth(name),
-				name, name);
-	}
-
-	@GET
-	@Path("/movie/{name}")
-	@Produces(MediaType.TEXT_HTML)
-	public String getMovie(@PathParam("name") String name) throws UnknownHostException {
-		return MENU.replaceAll("../../", "../../../") + String.format(
-				"<h2>%s</h2><h3>Year</h3>%s<br><h3>Starring:</h3>%s",
-				name, DatabaseManipulator.getMovieYear(name),
-				DatabaseManipulator.sortActorsStarringInMovie(name, "dateBirth").replaceAll("\n", "<br>"));
 	}
 }
