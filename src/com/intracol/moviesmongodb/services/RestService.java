@@ -108,7 +108,8 @@ public class RestService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void newActor(@FormParam("name") String name, @FormParam("description") String description,
 			@FormParam("date") String dateBirth) throws UnknownHostException {
-		if (name.length() >= 3 && name.length() < 64 && dateBirth != null
+		if (name.length() >= 3 && name.length() < 64
+				&& dateBirth != null && dateBirth.length() != 10
 				&& description.length() < 1000 && description.length() > 10) {
 			try {
 				DateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);

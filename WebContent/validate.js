@@ -7,7 +7,7 @@ $.validator.addMethod(
     "Please enter a valid date! (From 1900 to 2099)"
 );
 
-$("input[type=submit]").click(function(){
+$("input[type=submit]").focus(function(){
 	$("form").validate({
 		errorClass: "err",
 		rules: {
