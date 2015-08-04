@@ -163,7 +163,8 @@ public class DatabaseManipulator {
 		}
 	}
 
-	private static List<String> getNames(DBCollection collection) {
+	private static List<String> getNames(DBCollection collection) throws UnknownHostException {
+		initDB();
 		List<String> names = new ArrayList<String>();
 		DBCursor c = collection.find();
 		while (c.hasNext()) {
@@ -172,11 +173,11 @@ public class DatabaseManipulator {
 		return names;
 	}
 
-	public static List<String> getActorNames() {
+	public static List<String> getActorNames() throws UnknownHostException {
 		return getNames(actors);
 	}
 
-	public static List<String> getMovieNames() {
+	public static List<String> getMovieNames() throws UnknownHostException {
 		return getNames(movies);
 	}
 

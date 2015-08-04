@@ -50,14 +50,14 @@ public class RestService {
 	@GET
 	@Path("/listactors")
 	@Produces(MediaType.TEXT_HTML)
-	public String listActors() {
+	public String listActors() throws UnknownHostException {
 		return PageBuilder.buildListActorsPage();
 	}
 
 	@GET
 	@Path("/listmovies")
 	@Produces(MediaType.TEXT_HTML)
-	public String listMovies() {
+	public String listMovies() throws UnknownHostException {
 		return PageBuilder.buildListMoviesPage();
 	}
 

@@ -41,7 +41,7 @@ public class PageBuilder {
 				DatabaseManipulator.moviesActorStarsIn(name).replaceAll("\n", "<br>"));
 	}
 
-	public static String buildListActorsPage() {
+	public static String buildListActorsPage() throws UnknownHostException {
 		String actorsNames = "";
 		for (String name : DatabaseManipulator.getActorNames()) {
 			actorsNames += String.format("<a href=\"./actor/%s\">%s</a><br>", name, name);
@@ -49,7 +49,7 @@ public class PageBuilder {
 		return MENU + actorsNames;
 	}
 
-	public static String buildListMoviesPage() {
+	public static String buildListMoviesPage() throws UnknownHostException {
 		String moviesNames = "";
 		for (String name : DatabaseManipulator.getMovieNames()) {
 			moviesNames += String.format("<a href=\"./movie/%s\">%s</a><br>", name, name);

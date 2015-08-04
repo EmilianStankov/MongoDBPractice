@@ -1,3 +1,12 @@
+$.validator.addMethod(
+	"date",
+    function(value, element, regexp) {
+        var check = false;
+        return this.optional(element) || regexp.test(value);
+    },
+    "Please enter a valid date! (From 1900 to 2099)"
+);
+
 $("input[type=submit]").click(function(){
 	$("form").validate({
 		errorClass: "err",
@@ -12,6 +21,7 @@ $("input[type=submit]").click(function(){
 			},
 			date: {
 				required: true,
+				date: /^(0[1-9]|[12][0-9]|3[01])[\.](0[1-9]|1[0-2])[\.](19[0-9][0-9]|20[0-9][0-9])/
 			},
 			actorName: {
 				required: true,
